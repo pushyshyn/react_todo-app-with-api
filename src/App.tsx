@@ -13,8 +13,10 @@ import { List } from './components/List';
 import { Error as ErrorMessage } from './components/Error';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
+
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
+import { ErrorMessages } from './types/ErrorMessages';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -29,7 +31,7 @@ export const App: React.FC = () => {
     const formattedTitle = title.trim();
 
     if (!formattedTitle) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(ErrorMessages.EMPTY_TITLE);
 
       return;
     }
@@ -41,14 +43,14 @@ export const App: React.FC = () => {
     };
 
     try {
-      setTempTodoTitle(title); // Show the temporary todo
+      setTempTodoTitle(title);
 
       const createdTodo = await createTodo(newTodo);
 
       setTodos(currentTodos => [...currentTodos, createdTodo]);
     } catch {
-      setErrorMessage('Unable to add a todo');
-      throw new Error('Unable to add a todo');
+      setErrorMessage(ErrorMessages.ENABLE_TO_ADD_TODO);
+      throw new Error(ErrorMessages.ENABLE_TO_ADD_TODO);
     } finally {
       setTempTodoTitle(null);
     }
@@ -61,7 +63,7 @@ export const App: React.FC = () => {
 
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
     } catch {
-      setErrorMessage('Unable to delete a todo');
+      setErrorMessage(ErrorMessages.ENABLE_TO_DELETE_TODO);
     } finally {
       setIdsProccesing([]);
     }
@@ -82,8 +84,8 @@ export const App: React.FC = () => {
         }),
       );
     } catch {
-      setErrorMessage('Unable to update a todo');
-      throw new Error('Unable to update a todo');
+      setErrorMessage(ErrorMessages.ENABLE_TO_UPDATE_TODO);
+      throw new Error(ErrorMessages.ENABLE_TO_UPDATE_TODO);
     } finally {
       setIdsProccesing([]);
     }
@@ -102,7 +104,7 @@ export const App: React.FC = () => {
 
           return { id: todo.id, status: 'resolved' };
         } catch {
-          setErrorMessage('Unable to delete a todo');
+          setErrorMessage(ErrorMessages.ENABLE_TO_DELETE_TODO);
 
           return { id: todo.id, status: 'rejected' };
         } finally {
@@ -137,7 +139,7 @@ export const App: React.FC = () => {
         }),
       );
     } catch {
-      setErrorMessage('Unable to clear completed todos');
+      setErrorMessage(ErrorMessages.ENABLE_TO_CLEAR_COMPLETED_TODO);
     }
   };
 
@@ -179,7 +181,7 @@ export const App: React.FC = () => {
 
         setTodos(updatedTodos);
       } catch {
-        setErrorMessage('Unable to update todos');
+        setErrorMessage(ErrorMessages.ENABLE_TO_UPDATE_TODO);
       } finally {
         setIdsProccesing([]);
       }
@@ -207,7 +209,7 @@ export const App: React.FC = () => {
         }),
       );
     } catch {
-      setErrorMessage('Unable to update todos');
+      setErrorMessage(ErrorMessages.ENABLE_TO_UPDATE_TODO);
     } finally {
       setIdsProccesing([]);
     }
@@ -216,7 +218,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos()
       .then(setTodos)
-      .catch(() => setErrorMessage('Unable to load todos'));
+      .catch(() => setErrorMessage(ErrorMessages.ENABLE_TO_LOAD_TODO));
   }, []);
 
   useEffect(() => {
