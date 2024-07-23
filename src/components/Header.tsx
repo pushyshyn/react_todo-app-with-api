@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { FC, useEffect, useState } from 'react';
 import cn from 'classnames';
+import { Error } from './Error';
 
 interface Props {
   onAdd: (title: string) => Promise<void>;
@@ -18,6 +19,7 @@ export const Header: FC<Props> = ({
 }) => {
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -26,18 +28,16 @@ export const Header: FC<Props> = ({
       setLoading(true);
       await onAdd(title);
       setTitle('');
+      setError(null);
     } catch {
-      // eslint-disable-next-line no-console
-      console.log('Error adding todo');
+      setError('Error adding todo');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    inputRef.current?.focus();
   }, [inputRef, loading]);
 
   return (
@@ -52,6 +52,8 @@ export const Header: FC<Props> = ({
           onClick={onToggleAll}
         />
       )}
+
+      {error && <Error errorMessage={error} onClose={() => setError(null)} />}
 
       <form onSubmit={handleSubmit}>
         <input

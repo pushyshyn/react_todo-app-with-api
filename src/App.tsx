@@ -112,9 +112,11 @@ export const App: React.FC = () => {
         }
       };
 
-      const res = await Promise.allSettled(filteredTodos.map(deleteCallback));
+      const response = await Promise.allSettled(
+        filteredTodos.map(deleteCallback),
+      );
 
-      const resolvedIds = res.reduce(
+      const resolvedIds = response.reduce(
         (acc, item) => {
           if (item.status === 'rejected') {
             return acc;
@@ -130,13 +132,7 @@ export const App: React.FC = () => {
       );
 
       setTodos(currentTodos =>
-        currentTodos.filter(todo => {
-          if (resolvedIds[todo.id] && todo.completed) {
-            return false;
-          }
-
-          return true;
-        }),
+        currentTodos.filter(todo => !(resolvedIds[todo.id] && todo.completed)),
       );
     } catch {
       setErrorMessage(ErrorMessages.ENABLE_TO_CLEAR_COMPLETED_TODO);
@@ -260,7 +256,7 @@ export const App: React.FC = () => {
       </div>
 
       <ErrorMessage
-        message={errorMessage}
+        errorMessage={errorMessage}
         onClose={() => setErrorMessage('')}
       />
     </div>
