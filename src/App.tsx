@@ -92,8 +92,8 @@ export const App: React.FC = () => {
   };
 
   const clearCompletedTodos = async () => {
-    const filteredTodos = todos.filter(todo => todo.completed);
-    const completedIds = filteredTodos.map(todo => todo.id);
+    const completedTodos = todos.filter(todo => todo.completed);
+    const completedIds = completedTodos.map(todo => todo.id);
 
     setIdsProccesing(completedIds);
 
@@ -113,7 +113,7 @@ export const App: React.FC = () => {
       };
 
       const response = await Promise.allSettled(
-        filteredTodos.map(deleteCallback),
+        completedTodos.map(deleteCallback),
       );
 
       const resolvedIds = response.reduce(
@@ -157,12 +157,12 @@ export const App: React.FC = () => {
   }, [todos, filter]);
 
   const todosCount = useMemo(() => {
-    const active = todos.filter(({ completed }) => !completed).length;
-    const completed = todos.length - active;
+    const activeTodosCount = todos.filter(({ completed }) => !completed).length;
+    const completedTodosCount = todos.length - activeTodosCount;
 
     return {
-      active,
-      completed,
+      active: activeTodosCount,
+      completed: completedTodosCount,
     };
   }, [todos]);
 
