@@ -46,7 +46,7 @@ export const Header: FC<Props> = ({
         <button
           type="button"
           className={cn('todoapp__toggle-all', {
-             active: !todosCount.active,
+            active: !todosCount.active,
           })}
           data-cy="ToggleAllButton"
           onClick={onToggleAll}

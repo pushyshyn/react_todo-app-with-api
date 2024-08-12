@@ -17,6 +17,7 @@ import { Header } from './components/Header';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
 import { ErrorMessages } from './types/ErrorMessages';
+import { filterTodos } from './utils/filterTodos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -25,7 +26,7 @@ export const App: React.FC = () => {
   const [tempTodoTitle, setTempTodoTitle] = useState<string | null>('');
   const [idsProccesing, setIdsProccesing] = useState<number[]>([]);
 
-  const ref = useRef<HTMLInputElement | null>(null);
+  const todoInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleAddTodo = async (title: string) => {
     const formattedTitle = title.trim();
@@ -139,22 +140,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const filterTodos = useMemo(() => {
-    let filteredTodos = todos;
-
-    switch (filter) {
-      case Filter.Active:
-        filteredTodos = todos.filter(todo => !todo.completed);
-        break;
-      case Filter.Completed:
-        filteredTodos = todos.filter(todo => todo.completed);
-        break;
-      default:
-        break;
-    }
-
-    return filteredTodos;
-  }, [todos, filter]);
+  const filteredTodos = useMemo(() => filterTodos(todos, filter), [todos, filter]);
 
   const todosCount = useMemo(() => {
     const activeTodosCount = todos.filter(({ completed }) => !completed).length;
@@ -185,14 +171,14 @@ export const App: React.FC = () => {
       return;
     }
 
-    const filteredTodos = todos.filter(todo => !todo.completed);
-    const activeIds = filteredTodos.map(todo => todo.id);
+    const activeTodos = todos.filter(todo => !todo.completed);
+    const activeIds = activeTodos.map(todo => todo.id);
 
     setIdsProccesing(activeIds);
 
     try {
       await Promise.all(
-        filteredTodos.map(todo => patchTodo(todo.id, { completed: true })),
+        activeTodos.map(todo => patchTodo(todo.id, { completed: true })),
       );
 
       setTodos(currentTodos =>
@@ -218,7 +204,7 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    ref.current?.focus();
+    todoInputRef.current?.focus();
   }, [todos.length, tempTodoTitle]);
 
   if (!USER_ID) {
@@ -233,14 +219,14 @@ export const App: React.FC = () => {
         <Header
           onAdd={handleAddTodo}
           onToggleAll={handleToggleAll}
-          inputRef={ref}
+          inputRef={todoInputRef}
           todosCount={todosCount}
         />
 
         <List
           onDelete={handleDeleteTodo}
           onEdit={handleEditTodo}
-          todos={filterTodos}
+          todos={filteredTodos}
           tempTodoTitle={tempTodoTitle}
           idsProccesing={idsProccesing}
         />

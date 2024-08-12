@@ -1,19 +1,17 @@
 const BASE_URL = 'https://mate.academy/students-api';
 
-
 function wait(delay: number) {
   return new Promise(resolve => {
     setTimeout(resolve, delay);
   });
 }
 
-
 type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
 function request<T>(
   url: string,
   method: RequestMethod = 'GET',
-  data: any = null, 
+  data: any = null,
 ): Promise<T> {
   const options: RequestInit = { method };
 
@@ -23,7 +21,6 @@ function request<T>(
       'Content-Type': 'application/json; charset=UTF-8',
     };
   }
-
 
   return wait(100)
     .then(() => fetch(BASE_URL + url, options))
